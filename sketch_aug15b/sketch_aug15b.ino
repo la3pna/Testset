@@ -9,6 +9,8 @@
  * Lines are always terminated with /n
 */
 
+#define debug
+
 String idString = "LA3PNA,RF transceiver testset,1,0.1A";
 
 struct scpi_parser_context ctx;
@@ -21,12 +23,14 @@ struct scpi_parser_context ctx;
 
  int counter = 0;
  bool remote = LOW;
- int aftxdata = 0;
- int afrxdata = 0;
- int cpldata = 0;
+ int aftxdata = 2;
+ int afrxdata = 2;
+ int rfrxdata = 2;
+ int cpldata = 2;
  int cplold = 1;
  int aftxold = 1;
  int afrxold = 1;
+ int rfrxold = 1;
  
 void setup() {
   // put your setup code here, to run once:
@@ -41,7 +45,10 @@ void setup() {
   
   pinMode(localled,OUTPUT); digitalWrite(localled,LOW); // anotherpin low
 
-  pinMode(9, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
   pinMode(clk, OUTPUT);
   pinMode(data, OUTPUT);
   
@@ -82,33 +89,33 @@ void loop() {
    Lets do all the reading of the pushbuttons.
    */
    if(!remote){
-     if((digitalRead(22)==LOW)&&(counter != 1)){counter =  1; String str = ":ROUT:CPL 1";read_length = 11;str.toCharArray(line_buffer, 256);Serial.println("CPL1");}
+     if((digitalRead(22)==LOW)&&(counter != 1)){counter =  1; String str = ":ROUT:CPL 1";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(23)==LOW)&&(counter != 2)){counter =  2; String str = ":ROUT:CPL 2";read_length = 11;str.toCharArray(line_buffer, 256);}  
      if((digitalRead(24)==LOW)&&(counter != 3)){counter =  3; String str = ":ROUT:CPL 3";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(25)==LOW)&&(counter != 4)){counter =  4; String str = ":ROUT:CPL 4";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(26)==LOW)&&(counter != 5)){counter =  5; String str = ":ROUT:CPL 5";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(27)==LOW)&&(counter != 6)){counter =  6; String str = ":ROUT:CPL 6";read_length = 11;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(29)==LOW)&&(counter != 7)){counter =  7; String str = ":SYS:RX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(30)==LOW)&&(counter != 8)){counter =  8; String str = ":SYS:TX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(31)==LOW)&&(counter != 9)){counter =  9; String str = ":SYS:RX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(32)==LOW)&&(counter !=10)){counter = 10; String str = ":SYS:TX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(33)==LOW)&&(counter !=11)){counter = 11; String str = ":SYS:RX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(34)==LOW)&&(counter !=12)){counter = 12; String str = ":SYS:TX";read_length = 7;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(36)==LOW)&&(counter !=13)){counter = 13; String str = ":ROUT:AFRX 1";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(37)==LOW)&&(counter !=14)){counter = 14; String str = ":ROUT:AFRX 2";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(38)==LOW)&&(counter !=15)){counter = 15; String str = ":ROUT:AFRX 3";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(39)==LOW)&&(counter !=16)){counter = 16; String str = ":ROUT:AFRX 4";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(40)==LOW)&&(counter !=17)){counter = 17; String str = ":ROUT:AFRX 5";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(41)==LOW)&&(counter !=18)){counter = 18; String str = ":ROUT:AFRX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(43)==LOW)&&(counter !=19)){counter = 19; String str = ":ROUT:AFTX 1";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(44)==LOW)&&(counter !=20)){counter = 20; String str = ":ROUT:AFTX 2";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(45)==LOW)&&(counter !=21)){counter = 21; String str = ":ROUT:AFTX 3";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(46)==LOW)&&(counter !=22)){counter = 22; String str = ":ROUT:AFTX 4";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(47)==LOW)&&(counter !=23)){counter = 23; String str = ":ROUT:AFTX 5";read_length = 12;str.toCharArray(line_buffer, 256);}
-     if((digitalRead(48)==LOW)&&(counter !=24)){counter = 24; String str = ":ROUT:AFTX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(28)==LOW)&&(counter != 7)){counter =  7; String str = ":ROUT:RFRX 1"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(29)==LOW)&&(counter != 8)){counter =  8; String str = ":ROUT:RFRX 2"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(30)==LOW)&&(counter != 9)){counter =  9; String str = ":ROUT:RFRX 3"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(31)==LOW)&&(counter !=10)){counter = 10; String str = ":ROUT:RFRX 4"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(32)==LOW)&&(counter !=11)){counter = 11; String str = ":ROUT:RFRX 5"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(33)==LOW)&&(counter !=12)){counter = 12; String str = ":ROUT:RFRX 6"; read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(34)==LOW)&&(counter !=13)){counter = 13; String str = ":ROUT:AFRX 1";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(35)==LOW)&&(counter !=14)){counter = 14; String str = ":ROUT:AFRX 2";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(36)==LOW)&&(counter !=15)){counter = 15; String str = ":ROUT:AFRX 3";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(37)==LOW)&&(counter !=16)){counter = 16; String str = ":ROUT:AFRX 4";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(38)==LOW)&&(counter !=17)){counter = 17; String str = ":ROUT:AFRX 5";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(39)==LOW)&&(counter !=18)){counter = 18; String str = ":ROUT:AFRX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(40)==LOW)&&(counter !=19)){counter = 19; String str = ":ROUT:AFTX 1";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(41)==LOW)&&(counter !=20)){counter = 20; String str = ":ROUT:AFTX 2";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(42)==LOW)&&(counter !=21)){counter = 21; String str = ":ROUT:AFTX 3";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(43)==LOW)&&(counter !=22)){counter = 22; String str = ":ROUT:AFTX 4";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(44)==LOW)&&(counter !=23)){counter = 23; String str = ":ROUT:AFTX 5";read_length = 12;str.toCharArray(line_buffer, 256);}
+     if((digitalRead(45)==LOW)&&(counter !=24)){counter = 24; String str = ":ROUT:AFTX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
     
      }
-     if((digitalRead(11)==LOW)&&(counter !=25)){counter = 25; String str = "*LOC";read_length = 4;str.toCharArray(line_buffer, 256);Serial.println("LOCAL");}
+     if((digitalRead(localpin)==LOW)&&(counter !=25)){counter = 25; String str = "*LOC";read_length = 4;str.toCharArray(line_buffer, 256);Serial.println("LOCAL");}
 
     
      if(read_length > 0)
@@ -123,6 +130,10 @@ void loop() {
      if(cpldata != cplold){
         spiout(7,cpldata);
         cplold = cpldata;}
+
+     if(rfrxdata != rfrxold){
+        spiout(6,rfrxdata);
+        rfrxold = rfrxdata;}
 
      if(aftxdata != aftxold){
         spiout(4,aftxdata);
@@ -159,13 +170,13 @@ void spiout(int latchPin,int number){
   scpi_free_tokens(command);
 if(serialport == 1){
   SerialUSB.println(idString);
-} else if (serialport == 2){
+  }else if (serialport == 2){
   Serial.println(idString);
   }else if (serialport == 3){
-    Serial.println(idString);
-    }else{
+  Serial3.println(idString);
+  }else{
       }
-   serialport = 0; // 2 for wlan/gpib
+   serialport = 0; 
   return SCPI_SUCCESS;
 }
 
@@ -226,6 +237,11 @@ scpi_error_t AFRX(struct scpi_parser_context* context, struct scpi_token* comman
    int sel  = (unsigned long)constrain(output_numeric.value, 0, 7);
    sel =pow(2,sel);
    afrxdata = sel;
+      #ifdef debug
+   Serial.print("afrx selected no: ");
+    Serial.println(sel);
+ 
+  #endif
   }
   else
   {
@@ -264,6 +280,12 @@ scpi_error_t AFTX(struct scpi_parser_context* context, struct scpi_token* comman
    int sel = (unsigned long)constrain(output_numeric.value, 0, 7);
    sel = pow(2,sel);
    aftxdata = sel;
+
+      #ifdef debug
+   Serial.print("aftx selected no: ");
+    Serial.println(sel);
+ 
+  #endif
   }
   else
   {
@@ -282,7 +304,49 @@ scpi_error_t AFTX(struct scpi_parser_context* context, struct scpi_token* comman
   return SCPI_SUCCESS;
 }
 
+scpi_error_t RFRX(struct scpi_parser_context* context, struct scpi_token* command)
+{
 
+    struct scpi_token* args;
+  struct scpi_numeric output_numeric;
+  unsigned char output_value;
+  args = command;
+
+  while(args != NULL && args->type == 0)
+  {
+    args = args->next;
+  }
+
+  output_numeric = scpi_parse_numeric(args->value, args->length, 1e3, 0, 25e6);
+  if(output_numeric.length == 0)
+  {
+    
+   int sel = (unsigned long)constrain(output_numeric.value, 0, 7);
+   sel = pow(2,sel);
+   rfrxdata = sel;
+
+      #ifdef debug
+   Serial.print("RFRX selected no: ");
+    Serial.println(sel);
+ 
+  #endif
+  }
+  else
+  {
+    scpi_error error;
+    error.id = -200;
+    error.description = "Command error;Invalid unit";
+    error.length = 26;
+    
+    scpi_queue_error(&ctx, error);
+    scpi_free_tokens(command);
+    return SCPI_SUCCESS;
+  }
+
+  scpi_free_tokens(command);
+
+  return SCPI_SUCCESS;
+}
 
 scpi_error_t CPL(struct scpi_parser_context* context, struct scpi_token* command)
 {
@@ -303,9 +367,10 @@ scpi_error_t CPL(struct scpi_parser_context* context, struct scpi_token* command
     
    int sel  = (unsigned long)constrain(output_numeric.value, 0, 7);
    sel = pow(2,sel);
-   
-   // Serial.println(sel);
-  // spiout(7, sel);
+   #ifdef debug
+   Serial.print("coupler selected no: ");
+    Serial.println(sel);
+  #endif
   cpldata = sel;
   }
   else
@@ -349,26 +414,27 @@ void setup_inputs(){
     pinMode(25, INPUT_PULLUP);
     pinMode(26, INPUT_PULLUP);
     pinMode(27, INPUT_PULLUP);
+    pinMode(28, INPUT_PULLUP);
     pinMode(29, INPUT_PULLUP);
     pinMode(30, INPUT_PULLUP);
     pinMode(31, INPUT_PULLUP);
     pinMode(32, INPUT_PULLUP);
     pinMode(33, INPUT_PULLUP);
     pinMode(34, INPUT_PULLUP);
+    pinMode(35, INPUT_PULLUP);
     pinMode(36, INPUT_PULLUP);
     pinMode(37, INPUT_PULLUP);
     pinMode(38, INPUT_PULLUP);
     pinMode(39, INPUT_PULLUP);
     pinMode(40, INPUT_PULLUP);
     pinMode(41, INPUT_PULLUP);
+    pinMode(42, INPUT_PULLUP);
     pinMode(43, INPUT_PULLUP);
     pinMode(44, INPUT_PULLUP);
     pinMode(45, INPUT_PULLUP);
-    pinMode(46, INPUT_PULLUP);
-    pinMode(47, INPUT_PULLUP);
-    pinMode(48, INPUT_PULLUP);
     pinMode(10, INPUT_PULLUP);
     pinMode(11, INPUT_PULLUP);
+    
     
   }
 
@@ -421,5 +487,6 @@ void setup_scpi(){
   scpi_register_command(route, SCPI_CL_CHILD, "AFTX", 4, "AFTX", 4, AFTX);
   
   scpi_register_command(route, SCPI_CL_CHILD, "CouPLe", 6, "CPL", 3, CPL);
+  scpi_register_command(route, SCPI_CL_CHILD, "RFRX", 4, "RFRX", 4, RFRX);
   
   }
