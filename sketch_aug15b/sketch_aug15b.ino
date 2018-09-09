@@ -51,6 +51,8 @@ void setup() {
   pinMode(7, OUTPUT);
   pinMode(clk, OUTPUT);
   pinMode(data, OUTPUT);
+
+  delay(100);
   
 }
 
@@ -89,6 +91,8 @@ void loop() {
    Lets do all the reading of the pushbuttons.
    */
    if(!remote){
+    if(digitalRead(40) && digitalRead(41) && (counter != 100)){counter = 100; String str = ":ROUT:2TONE"; read_length = 11;str.toCharArray(line_buffer, 256);}
+    else {
      if((digitalRead(22)==LOW)&&(counter != 1)){counter =  1; String str = ":ROUT:CPL 1";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(23)==LOW)&&(counter != 2)){counter =  2; String str = ":ROUT:CPL 2";read_length = 11;str.toCharArray(line_buffer, 256);}  
      if((digitalRead(24)==LOW)&&(counter != 3)){counter =  3; String str = ":ROUT:CPL 3";read_length = 11;str.toCharArray(line_buffer, 256);}
@@ -113,10 +117,10 @@ void loop() {
      if((digitalRead(43)==LOW)&&(counter !=22)){counter = 22; String str = ":ROUT:AFTX 4";read_length = 12;str.toCharArray(line_buffer, 256);}
      if((digitalRead(44)==LOW)&&(counter !=23)){counter = 23; String str = ":ROUT:AFTX 5";read_length = 12;str.toCharArray(line_buffer, 256);}
      if((digitalRead(45)==LOW)&&(counter !=24)){counter = 24; String str = ":ROUT:AFTX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
-    
+    }
      }
      if((digitalRead(localpin)==LOW)&&(counter !=25)){counter = 25; String str = "*LOC";read_length = 4;str.toCharArray(line_buffer, 256);Serial.println("LOCAL");}
-
+     if (remote == HIGH){digitalWrite(localled,HIGH);} else {digitalWrite(localled,LOW);} 
     
      if(read_length > 0)
      {
@@ -240,6 +244,50 @@ scpi_error_t AFRX(struct scpi_parser_context* context, struct scpi_token* comman
       #ifdef debug
    Serial.print("afrx selected no: ");
     Serial.println(sel);
+ 
+  #endif
+  }
+  else
+  {
+    scpi_error error;
+    error.id = -200;
+    error.description = "Command error;Invalid unit";
+    error.length = 26;
+    
+    scpi_queue_error(&ctx, error);
+    scpi_free_tokens(command);
+    return SCPI_SUCCESS;
+  }
+
+  scpi_free_tokens(command);
+
+  return SCPI_SUCCESS;
+}
+
+scpi_error_t tx2tone(struct scpi_parser_context* context, struct scpi_token* command)
+{
+
+    struct scpi_token* args;
+  struct scpi_numeric output_numeric;
+  unsigned char output_value;
+  args = command;
+   aftxdata = 6;
+  while(args != NULL && args->type == 0)
+  {
+    args = args->next;
+  }
+
+  output_numeric = scpi_parse_numeric(args->value, args->length, 1e3, 0, 25e6);
+  if(output_numeric.length == 0)
+  {
+    
+   int sel = (unsigned long)constrain(output_numeric.value, 0, 7);
+   //sel = pow(2,sel);
+   aftxdata = 6;
+
+      #ifdef debug
+   Serial.print("2-TONE");
+   // Serial.println(sel);
  
   #endif
   }
@@ -483,6 +531,7 @@ void setup_scpi(){
   scpi_register_command(systems, SCPI_CL_CHILD, "RX", 2, "RX", 2, setRX);
   scpi_register_command(systems, SCPI_CL_CHILD, "TX", 2, "TX", 2, setTX);
 
+  scpi_register_command(route, SCPI_CL_CHILD, "2TONE", 5, "2T", 2, tx2tone);
   scpi_register_command(route, SCPI_CL_CHILD, "AFRX", 4, "AFRX", 4, AFRX);
   scpi_register_command(route, SCPI_CL_CHILD, "AFTX", 4, "AFTX", 4, AFTX);
   
