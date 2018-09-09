@@ -52,7 +52,7 @@ void setup() {
   pinMode(clk, OUTPUT);
   pinMode(data, OUTPUT);
 
-  delay(100);
+  delay(1000);
   
 }
 
@@ -91,7 +91,7 @@ void loop() {
    Lets do all the reading of the pushbuttons.
    */
    if(!remote){
-    if(digitalRead(40) && digitalRead(41) && (counter != 100)){counter = 100; String str = ":ROUT:2TONE"; read_length = 11;str.toCharArray(line_buffer, 256);}
+    if((digitalRead(40)==LOW) && (digitalRead(41)==LOW) && (counter != 50)){counter = 100; String str = ":ROUT:2TONE"; read_length = 11;str.toCharArray(line_buffer, 256);}
     else {
      if((digitalRead(22)==LOW)&&(counter != 1)){counter =  1; String str = ":ROUT:CPL 1";read_length = 11;str.toCharArray(line_buffer, 256);}
      if((digitalRead(23)==LOW)&&(counter != 2)){counter =  2; String str = ":ROUT:CPL 2";read_length = 11;str.toCharArray(line_buffer, 256);}  
