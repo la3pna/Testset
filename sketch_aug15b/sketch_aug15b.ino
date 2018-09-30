@@ -20,9 +20,11 @@ struct scpi_parser_context ctx;
 #define localled 12     // This goes to the local LED
 #define clk  8          // clock bus to all of the SPI
 #define data 9          // data bus to all of the SPI
+#define pttpin 3           // ptt enable pin    
 
  int counter = 0;
  bool remote = LOW;
+ bool ptt = LOW;
  int aftxdata = 2;
  int afrxdata = 2;
  int rfrxdata = 2;
@@ -42,7 +44,7 @@ void setup() {
   setup_inputs();
   pinMode(RXTXpin,OUTPUT); digitalWrite(RXTXpin,LOW); // Relaypin low
   pinMode(anotherpin,OUTPUT); digitalWrite(anotherpin,LOW); // anotherpin low
-  
+  pinMode(ptt,OUTPUT); digitalWrite(ptt,LOW); // ptt pin low
   pinMode(localled,OUTPUT); digitalWrite(localled,LOW); // anotherpin low
 
   pinMode(4, OUTPUT);
@@ -129,6 +131,9 @@ void loop() {
         read_length = NULL;
         
      }
+
+     
+      digitalWrite(pttpin,ptt);  
 
     // Some logic to avoid the latchup in the SCPI processing
      if(cpldata != cplold){
@@ -441,16 +446,16 @@ scpi_error_t CPL(struct scpi_parser_context* context, struct scpi_token* command
 scpi_error_t enablePTT(struct scpi_parser_context* context, struct scpi_token* command)
 {
   scpi_free_tokens(command);
+ ptt = HIGH;
 
-  Serial.println("OIC,Signal Generator,1,10");
   return SCPI_SUCCESS;
 }
 
 scpi_error_t disablePTT(struct scpi_parser_context* context, struct scpi_token* command)
 {
   scpi_free_tokens(command);
+  ptt = LOW;
 
-  Serial.println("OIC,Signal Generator,1,10");
   return SCPI_SUCCESS;
 }
 
@@ -494,6 +499,8 @@ scpi_error_t SetTX(struct scpi_parser_context* context, struct scpi_token* comma
 scpi_error_t AFRX(struct scpi_parser_context* context, struct scpi_token* command);
 scpi_error_t AFTX(struct scpi_parser_context* context, struct scpi_token* command);
 scpi_error_t CPL(struct scpi_parser_context* context, struct scpi_token* command);
+scpi_error_t enablePTT(struct scpi_parser_context* context, struct scpi_token* command);
+scpi_error_t disablePTT(struct scpi_parser_context* context, struct scpi_token* command);
 
 
 void setup_scpi(){
@@ -530,6 +537,9 @@ void setup_scpi(){
 
   scpi_register_command(systems, SCPI_CL_CHILD, "RX", 2, "RX", 2, setRX);
   scpi_register_command(systems, SCPI_CL_CHILD, "TX", 2, "TX", 2, setTX);
+  scpi_register_command(systems, SCPI_CL_CHILD, "KEY", 3, "RX", 2, enablePTT);
+  scpi_register_command(systems, SCPI_CL_CHILD, "UNKEY", 5, "un", 2, disablePTT);
+  
 
   scpi_register_command(route, SCPI_CL_CHILD, "2TONE", 5, "2T", 2, tx2tone);
   scpi_register_command(route, SCPI_CL_CHILD, "AFRX", 4, "AFRX", 4, AFRX);
