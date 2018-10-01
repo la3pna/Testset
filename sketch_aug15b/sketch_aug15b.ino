@@ -228,7 +228,7 @@ digitalWrite(RXTXpin,LOW);
 
 scpi_error_t AFRX(struct scpi_parser_context* context, struct scpi_token* command)
 {
-
+  ptt = LOW;
   struct scpi_token* args;
   struct scpi_numeric output_numeric;
   unsigned char output_value;
@@ -359,7 +359,7 @@ scpi_error_t AFTX(struct scpi_parser_context* context, struct scpi_token* comman
 
 scpi_error_t RFRX(struct scpi_parser_context* context, struct scpi_token* command)
 {
-
+    ptt = LOW;
     struct scpi_token* args;
   struct scpi_numeric output_numeric;
   unsigned char output_value;
