@@ -12,8 +12,8 @@
 #define debug
 
 String idString = "LA3PNA,RF transceiver testset,1,0.1A";
-
 struct scpi_parser_context ctx;
+
 #define RXTXpin 52      // Pin to relay RX/TX
 #define anotherpin 53   // don't know yet...
 #define localpin 11     // This goes to the local button, GND for local
@@ -121,6 +121,7 @@ void loop() {
      if((digitalRead(45)==LOW)&&(counter !=24)){counter = 24; String str = ":ROUT:AFTX 6";read_length = 12;str.toCharArray(line_buffer, 256);}
     }
      }
+     
      if((digitalRead(localpin)==LOW)&&(counter !=25)){counter = 25; String str = "*LOC";read_length = 4;str.toCharArray(line_buffer, 256);Serial.println("LOCAL");}
      if (remote == HIGH){digitalWrite(localled,HIGH);} else {digitalWrite(localled,LOW);} 
     
@@ -134,7 +135,7 @@ void loop() {
 
      
       digitalWrite(pttpin,ptt);  
-
+//Serial.println(counter);
     // Some logic to avoid the latchup in the SCPI processing
      if(cpldata != cplold){
         spiout(7,cpldata);
@@ -157,7 +158,7 @@ void spiout(int latchPin,int number){
      digitalWrite(latchPin, LOW);
      uint8_t i;
 
-     for (i = 0; i < 8; i++)  {
+     for (i = 0; i <8 ; i++)  {
         digitalWrite(data, !!(number & (1 << i)));
         digitalWrite(clk, HIGH);
         digitalWrite(clk, LOW);   
